@@ -8,6 +8,6 @@ namespace GWT_ConsoleApp.Services
 {
     public interface IWikipediaService
     {
-        Task<ArticleDto?> GetArticleAsync(string title);
+        Task<Article?> GetArticleAsync(string title);
     }
 }

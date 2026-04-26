@@ -8,18 +8,22 @@ namespace GWT_ConsoleApp.Models
 {
     public class Game
     {
-        private readonly IWikipediaService _wiki;
+        private readonly IWikipediaService _wikipedia;
+        private readonly IWikimediaService _wikimedia;
 
         private Article? _article;
 
-        public Game(IWikipediaService wiki)
+        public Game(IWikipediaService wikipedia, IWikimediaService wikimedia)
         {
-            _wiki = wiki;
+            Console.WriteLine("Initializing game...");
+            _wikipedia = wikipedia;
+            _wikimedia = wikimedia;
         }
 
-        public async Task Run(string title = "cat")
+        public async Task StartAsync(string title = "cat")
         {
-            var article = await _wiki.GetArticleAsync(title);
+            Article[]  mostPopularTitles = await _wikimedia.GetRandomMostPopularTitlesAsync();
+            var article = await _wikipedia.GetArticleAsync(title);
             Console.WriteLine(article);
         }
 

@@ -2,21 +2,42 @@ using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using GWT_ConsoleApp.Models;
 using GWT_ConsoleApp.Models.Wikipedia;
+using GWT_ConsoleApp.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace GWT_ConsoleApp.Services;
 public class WikipediaService : IWikipediaService
 {
     private readonly HttpClient _httpClient;
+    private readonly WikipediaServiceOptions _options;
 
     public WikipediaService(HttpClient httpClient)
     {
         _httpClient = httpClient;
+
+        var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+        _options = new WikipediaServiceOptions();
+
+        configuration.GetSection("WikipediaService").Bind(_options);
+
+
+        ConfigureHttpClient();
     }
 
-    public async Task<ArticleDto?> GetArticleAsync(string title)
+    private void ConfigureHttpClient()
     {
-        var url =
-            $"https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&explaintext&titles={Uri.EscapeDataString(title)}";
+        _httpClient.BaseAddress = new Uri(_options.BaseUrl);
+
+        _httpClient.DefaultRequestHeaders.UserAgent.Clear();
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
+    }
+
+    public async Task<Article?> GetArticleAsync(string title)
+    {
+        var url = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exlimit=max&explaintext&titles=cat";//_options.ExtractArticleUrl;
 
         var response = await _httpClient.GetAsync(url);
 
@@ -33,29 +54,8 @@ public class WikipediaService : IWikipediaService
         if (page == null)
             return null;
 
-        return new ArticleDto
-        {
-            Title = page.Title,
-            Content = page.Extract
-        };
+        return new Article(page.Title, page.Extract);
     }
 
-    private async Task<List<string>> GetMostPopularTitles()
-    {
-        var randomDate = Helpers.RandomHelper.RandomDate(DateTime.Now.AddDays(-30), DateTime.Now);
-        var url =
-            $"https://en.wikipedia.org/w/api.php?action=query&format=json&list=mostviewed&mvlimit=100&mvdir=descending";
-
-        var response = await _httpClient.GetAsync(url);
-
-        if (!response.IsSuccessStatusCode)
-            return new List<string>();
-
-        var data = await response.Content.ReadFromJsonAsync<WikipediaMostViewedResponseDto>();
-
-        if (data?.Query?.MostViewed == null || data.Query.MostViewed.Count == 0)
-            return new List<string>();
-
-        return data.Query.MostViewed.Select(mv => mv.Title).ToList();
-    }
+   
 }

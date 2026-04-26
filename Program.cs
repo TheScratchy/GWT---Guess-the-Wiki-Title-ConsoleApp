@@ -2,31 +2,27 @@
 using Microsoft.Extensions.DependencyInjection;
 using GWT_ConsoleApp.Services;
 using GWT_ConsoleApp.Models;
+using GWT_ConsoleApp.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
-var services = new ServiceCollection();
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((context, services) =>
+    {
+        IConfiguration config = context.Configuration;
 
-services.AddHttpClient<IWikipediaService, WikipediaService>(client =>
-{
-    client.DefaultRequestHeaders.UserAgent.ParseAdd(
-        "GWT_ConsoleApp/1.0 (learning project)"
-    );
-});
+        services.Configure<WikipediaServiceOptions>(
+            config.GetSection("WikipediaApi"));
 
-var provider = services.BuildServiceProvider();
+        services.AddHttpClient<IWikipediaService, WikipediaService>();
+        services.AddHttpClient<IWikimediaService, WikimediaService>();
 
-// var wikiService = provider.GetRequiredService<IWikipediaService>();
+        services.AddSingleton<Game>();
+    })
+    .Build();
 
-// var article = await wikiService.GetArticleAsync("cat");
-
-
-
-Console.WriteLine("Initializing game...");
-Game game = new(provider.GetRequiredService<IWikipediaService>());
-
-await game.Run();
-
-
-
+var game = host.Services.GetRequiredService<Game>();
+await game.StartAsync();
 
 //https://en.wikipedia.org/wiki/Special:Random
 // https://en.wikipedia.org/api/rest_v1/page/summary/{title}

@@ -9,10 +9,16 @@ namespace GWT_ConsoleApp.Helpers
     {
         private static readonly Random _random = new Random();
 
-        public static DateTime RandomDate(DateTime from, DateTime to)
+        public static int RandomInt(int max = 255, int min = 0)
         {
-            var range = (to - from).Days;
-            return from.Date.AddDays(_random.Next(range + 1));
+            return _random.Next(min, max);
+        }
+        public static DateOnly RandomDate()
+        {
+            var from = new DateOnly(2015, 1, 1);
+            var to = DateOnly.FromDateTime(DateTime.Now);
+            var range = (to.ToDateTime(TimeOnly.MinValue) - from.ToDateTime(TimeOnly.MinValue)).Days;
+            return from.AddDays(_random.Next(range + 1));
         }
     }
 }

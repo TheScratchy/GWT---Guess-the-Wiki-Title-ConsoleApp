@@ -13,7 +13,9 @@ namespace GWT_ConsoleApp.Models
     {
         private string? _rawContent;
         private string? _title;
-        private string? _changedContent;
+        private string? _encryptedContent;
+
+        public string EncryptedContent {get {return  _encryptedContent;}}
         private ArticleOptions _options;
 
         private bool CheckCandidateLength(string candidate)
@@ -21,24 +23,17 @@ namespace GWT_ConsoleApp.Models
             return candidate.Split(' ').Length >= _options.MinimumArticleWords;
         }
 
-        // public string GetContent(string url)
-        // {
-        //     return _httpClient.GetFromJsonAsync<UserDto>(url);
-        // }
-        // private string GenerateNewContent()
-        // {
-        //     string candidate = _options.RandomArticleUrl;  
-        // }
-
-        public Article()
+        public string GetContent()
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
+            if (_title == null)
+                throw new InvalidOperationException("Article title is not set.");
+            return _rawContent ?? string.Empty;
+        }
 
-            configuration.GetSection("Article").Bind(_options);
-
-            _options = new ArticleOptions();
+        public Article(string title, string content = "")
+        {
+            _title = title;
+            _rawContent = content;
         }
     }
 }
