@@ -37,9 +37,7 @@ public class WikipediaService : IWikipediaService
 
     public async Task<Article?> GetArticleAsync(string title)
     {
-        var url = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exlimit=max&explaintext&titles=cat";//_options.ExtractArticleUrl;
-
-        var response = await _httpClient.GetAsync(url);
+        var response = await _httpClient.GetAsync(_options.ExtractArticleUrl);
 
         if (!response.IsSuccessStatusCode)
             return null;
@@ -54,8 +52,8 @@ public class WikipediaService : IWikipediaService
         if (page == null)
             return null;
 
-        return new Article(page.Title, page.Extract);
+        return page.Extract.Split(' ').Length >= _options.MinimumArticleWords
+                ? new Article(page.Title, page.Extract)
+                : null;
     }
-
-   
 }

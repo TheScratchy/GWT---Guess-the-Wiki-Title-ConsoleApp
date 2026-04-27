@@ -42,10 +42,10 @@ namespace GWT_ConsoleApp.Services
         /// </summary>
         /// <param name="rertiesLeft">Number of retries left (0 means no retries)</param>
         /// <returns>List of articles</returns>
-        public async Task<Article[]> GetRandomMostPopularTitlesAsync(int rertiesLeft = 255 )
+        public async Task<string[]> GetRandomMostPopularTitlesAsync(int rertiesLeft = 255 )
         {
             if (rertiesLeft <= 0)
-                return new Article[0];
+                return new string[0];
 
             rertiesLeft--;
     
@@ -54,8 +54,6 @@ namespace GWT_ConsoleApp.Services
             //"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/2015/07/01";
 
             var response = await _httpClient.GetAsync(url);
-            Console.WriteLine($"Response recieved for URL: {url} with status code: {response.StatusCode}");
-            Console.WriteLine($"Response content: {response.Content.ReadAsStringAsync().Result}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return await GetRandomMostPopularTitlesAsync(rertiesLeft);
@@ -65,22 +63,20 @@ namespace GWT_ConsoleApp.Services
             if (data?.Items == null || data.Items.Length == 0)
                 return await GetRandomMostPopularTitlesAsync(rertiesLeft);
 
-            Article[] articles = data?.Items?
+            string[] articleTitles = data?.Items?
                                         .Where(item => !_options.BannedWords.Any(bannedWord =>
                                             item.Article.Article.Contains(bannedWord, StringComparison.OrdinalIgnoreCase)))
-                                        .Select(item => new Article(item.Article.Article)).ToArray();
-            if (articles == null || articles.Length == 0)
+                                        .Select(item => item.Article.Article).ToArray();
+            if (articleTitles == null || articleTitles.Length == 0)
                 return await GetRandomMostPopularTitlesAsync(rertiesLeft);
             
-            return articles;
+            return articleTitles;
         }
 
-        public async Task<Article> GetRandomTitleAsync()
+        public async Task<string> GetRandomTitleAsync()
         {
-            Article[] articles = await GetRandomMostPopularTitlesAsync();
-            Article article = articles[RandomHelper.RandomInt(articles.Length)];
-            article.GetContent();
-            return articles[RandomHelper.RandomInt(articles.Length)];
+            string[] articleTitles = await GetRandomMostPopularTitlesAsync();
+            return articleTitles[RandomHelper.RandomInt(articleTitles.Length)];
         }
     }
 }

@@ -4,6 +4,8 @@ namespace GWT_ConsoleApp.Services
 {
     public interface IWikimediaService
     {
-        Task<Article[]> GetRandomMostPopularTitlesAsync(int rertiesLeft = 255);
+        Task<string[]> GetRandomMostPopularTitlesAsync(int rertiesLeft = 255);
+
+        Task<string> GetRandomTitleAsync();
     }
 }
