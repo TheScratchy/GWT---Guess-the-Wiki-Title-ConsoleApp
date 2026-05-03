@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using GWT_ConsoleApp.Models;
 using GWT_ConsoleApp.Models.Wikipedia;
 using GWT_ConsoleApp.Configuration;
@@ -37,7 +38,7 @@ public class WikipediaService : IWikipediaService
 
     public async Task<Article?> GetArticleAsync(string title)
     {
-        var response = await _httpClient.GetAsync(_options.ExtractArticleUrl);
+        var response = await _httpClient.GetAsync(_options.ExtractArticleUrl.Replace("{title}", Uri.EscapeDataString(title)));
 
         if (!response.IsSuccessStatusCode)
             return null;
@@ -49,7 +50,7 @@ public class WikipediaService : IWikipediaService
 
         var page = data.Query.Pages.Values.FirstOrDefault();
 
-        if (page == null)
+        if (page == null || page.Extract == null)
             return null;
 
         return page.Extract.Split(' ').Length >= _options.MinimumArticleWords

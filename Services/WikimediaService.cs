@@ -63,10 +63,12 @@ namespace GWT_ConsoleApp.Services
             if (data?.Items == null || data.Items.Length == 0)
                 return await GetRandomMostPopularTitlesAsync(rertiesLeft);
 
-            string[] articleTitles = data?.Items?
-                                        .Where(item => !_options.BannedWords.Any(bannedWord =>
-                                            item.Article.Article.Contains(bannedWord, StringComparison.OrdinalIgnoreCase)))
-                                        .Select(item => item.Article.Article).ToArray();
+            string[] articleTitles = data.Items.SelectMany(item => item.Articles)
+                                                .Select(a => a.Article)
+                                                .Where(title => !_options.BannedWords
+                                                    .Any(banned => title.Contains(banned, StringComparison.OrdinalIgnoreCase)))
+                                                .ToArray();
+
             if (articleTitles == null || articleTitles.Length == 0)
                 return await GetRandomMostPopularTitlesAsync(rertiesLeft);
             

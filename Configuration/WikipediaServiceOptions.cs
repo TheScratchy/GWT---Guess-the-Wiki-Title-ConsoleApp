@@ -7,9 +7,9 @@ namespace GWT_ConsoleApp.Configuration
 {
     public class WikipediaServiceOptions
     {
-        public string? ExtractArticleUrl {get; set; }
-        public string? BaseUrl {get; set; }
-        public string? UserAgent {get; set; }
+        public string ExtractArticleUrl {get; set; } = string.Empty;
+        public string BaseUrl {get; set; } = string.Empty;
+        public string UserAgent {get; set; } = string.Empty;
         public int MinimumArticleWords {get; set; }
     }
 }

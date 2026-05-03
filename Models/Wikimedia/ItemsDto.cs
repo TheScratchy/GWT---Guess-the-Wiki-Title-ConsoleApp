@@ -7,6 +7,6 @@ namespace GWT_ConsoleApp.Models.Wikimedia
 {
     public class ItemsDto
     {
-        public ArticleDto Article { get; set; }
+        public ArticleDto[] Articles { get; set; } = Array.Empty<ArticleDto>();
     }
 }
