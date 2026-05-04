@@ -4,6 +4,7 @@ using System.Text.Json;
 using GWT_ConsoleApp.Models;
 using GWT_ConsoleApp.Models.Wikipedia;
 using GWT_ConsoleApp.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 namespace GWT_ConsoleApp.Services;
@@ -11,11 +12,13 @@ public class WikipediaService : IWikipediaService
 {
     private readonly HttpClient _httpClient;
     private readonly WikipediaServiceOptions _options;
+    private readonly ILogger<IWikimediaService> _logger;
 
-    public WikipediaService(HttpClient httpClient)
+    public WikipediaService(HttpClient httpClient, ILogger<IWikimediaService> logger)
     {
         _httpClient = httpClient;
-
+        _logger = logger;
+        
         var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
