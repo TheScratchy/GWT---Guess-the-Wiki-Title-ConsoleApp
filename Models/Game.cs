@@ -21,7 +21,12 @@ namespace GWT_ConsoleApp.Models
             _wikipedia = wikipedia;
             _wikimedia = wikimedia;
 
-            var commands = new ICommand[] {new ExitCommand()};
+            var commands = new ICommand[] 
+            {
+                new ExitCommand(),
+                new RestartCommand(),
+                new StatisticsCommand()
+            };
 
             commands = commands.Append(new HelpCommand(commands)).ToArray();
             
