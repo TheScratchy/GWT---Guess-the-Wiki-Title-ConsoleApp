@@ -9,7 +9,7 @@ namespace GWT_ConsoleApp.Helpers
     {
         private static readonly Random _random = new Random();
 
-        public static int RandomInt(int max = 255, int min = 0)
+        public static int RandomInt(int min = 0, int max = 255)
         {
             return _random.Next(min, max);
         }

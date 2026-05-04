@@ -35,6 +35,3 @@ var host = Host.CreateDefaultBuilder(args)
 
 var game = host.Services.GetRequiredService<Game>();
 await game.StartAsync();
-
-//https://en.wikipedia.org/wiki/Special:Random
-// https://en.wikipedia.org/api/rest_v1/page/summary/{title}

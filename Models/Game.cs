@@ -13,9 +13,7 @@ namespace GWT_ConsoleApp.Models
         private readonly IWikipediaService _wikipedia;
         private readonly IWikimediaService _wikimedia;
         private readonly CommandRouter _commandRouter;
-        private Article? _article;
-        public int NoOfGuesses { get; private set; } = 0;
-        public List<string> TriedWords { get; private set; } = new List<string>();
+        public Article? Article { get; private set; }
         public Game(IWikipediaService wikipedia, IWikimediaService wikimedia)
         {
             _wikipedia = wikipedia;
@@ -25,7 +23,8 @@ namespace GWT_ConsoleApp.Models
             {
                 new ExitCommand(),
                 new RestartCommand(),
-                new StatisticsCommand()
+                new StatisticsCommand(),
+                new RevealCommand()
             };
 
             commands = commands.Append(new HelpCommand(commands)).ToArray();
@@ -34,14 +33,14 @@ namespace GWT_ConsoleApp.Models
         }
         public void DisplayArticle()
         {
-            if (_article == null)
+            if (Article == null)
             {
                 Console.WriteLine("No article loaded.");
                 return;
             }
 
-            Console.WriteLine($"Title: {_article.EncryptedTitle} \n");
-            Console.WriteLine($"Content: {_article.EncryptedContent} \n");
+            Console.WriteLine($"Title: {Article.EncryptedTitle} \n");
+            Console.WriteLine($"Content: {Article.EncryptedContent} \n");
         }
         public void Exit()
         {
@@ -51,10 +50,7 @@ namespace GWT_ConsoleApp.Models
         public async Task StartAsync()
         {
             //string[]  mostPopularTitles = await _wikimedia.GetRandomMostPopularTitlesAsync();
-            _article = await _wikipedia.GetArticleAsync(await _wikimedia.GetRandomTitleAsync());
-            
-            NoOfGuesses = 0;
-            TriedWords.Clear();
+            Article = await _wikipedia.GetArticleAsync(await _wikimedia.GetRandomTitleAsync());
 
             Console.WriteLine("Initializing game \n");
             DisplayArticle();
@@ -74,18 +70,15 @@ namespace GWT_ConsoleApp.Models
                 if (_commandRouter.TryExecute(input, this))
                     continue;
                 
-                if (TriedWords.Contains(input, StringComparer.OrdinalIgnoreCase))
+                if (Article.TriedWords.Contains(input, StringComparer.OrdinalIgnoreCase))
                 {
                     Console.WriteLine("You've already tried that word. Try something else!");
                     continue;
                 }
 
-                TriedWords.Add(input);
-                NoOfGuesses++;
-
-                if (_article.GuessWord(input))
+                if (Article.GuessWord(input))
                 {
-                    if (_article.IsArticleGuessed())
+                    if (Article.IsArticleGuessed())
                     {
                         ConsoleEx.ClearScreen();
                         Console.WriteLine("Congratulations! You've guessed the title!");

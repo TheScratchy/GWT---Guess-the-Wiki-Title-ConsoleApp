@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using GWT_ConsoleApp.Helpers;
 
 namespace GWT_ConsoleApp.Models
 {
@@ -17,6 +18,10 @@ namespace GWT_ConsoleApp.Models
         private string _rawTitle;
         private string _encryptedContent = string.Empty;
         private string _encryptedTitle;
+        public List<string> TriedWords { get; private set; } = new List<string>();
+        public List<string> MatchedWords { get; private set; } = new List<string>();
+
+
         private Dictionary<string, List<int>> _wordContentIndex = new();
         private Dictionary<string, List<int>> _wordTitleIndex = new();
         public string EncryptedContent {get {return  _encryptedContent;}}
@@ -26,6 +31,18 @@ namespace GWT_ConsoleApp.Models
         public bool IsArticleGuessed()
         {
             return _encryptedTitle == _rawTitle;
+        }
+        public string RevealRandomWord()
+        {
+            
+            var availableWords = _wordContentIndex.Keys
+                .Where(word => !MatchedWords.Contains(word))
+                .ToArray();
+
+            string revealedWord = availableWords[RandomHelper.RandomInt(0, availableWords.Length - 1)];
+
+            GuessWord(revealedWord);
+            return revealedWord;
         }
         private void EncryptArticleContent()
         {
@@ -93,12 +110,16 @@ namespace GWT_ConsoleApp.Models
         public bool GuessWord(string word)
         {
             word = word.ToLowerInvariant();
+            
+            TriedWords.Add(word);
 
             bool foundInContent  = _wordContentIndex.TryGetValue(word, out var positionsContent);
             bool foundInTitle = _wordTitleIndex.TryGetValue(word, out var positionsTitle);
 
             if (!foundInContent && !foundInTitle)
                 return false;
+
+            MatchedWords.Add(word);
 
             var charsContent = _encryptedContent.ToCharArray();
             var charsTitle = _encryptedTitle.ToCharArray();

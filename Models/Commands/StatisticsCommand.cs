@@ -8,8 +8,8 @@ namespace GWT_ConsoleApp.Models.Commands
 
         public void Execute(Game game, string args)
         {
-            Console.WriteLine($"Number of guesses: {game.NoOfGuesses}");
-            Console.WriteLine($"Tried words: {string.Join(", ", game.TriedWords)}");
+            Console.WriteLine($"Number of guesses: {game.Article?.TriedWords.Count()}");
+            Console.WriteLine($"Tried words: {string.Join(", ", game.Article?.TriedWords ?? new ())}");
         }
     }
 }

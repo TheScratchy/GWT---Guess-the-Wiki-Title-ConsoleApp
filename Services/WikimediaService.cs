@@ -81,7 +81,7 @@ namespace GWT_ConsoleApp.Services
         public async Task<string> GetRandomTitleAsync()
         {
             string[] articleTitles = await GetRandomMostPopularTitlesAsync();
-            return articleTitles[RandomHelper.RandomInt(articleTitles.Length)];
+            return articleTitles[RandomHelper.RandomInt(0, articleTitles.Length - 1)];
         }
     }
 }
