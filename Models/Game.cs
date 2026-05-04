@@ -53,6 +53,9 @@ namespace GWT_ConsoleApp.Models
             //string[]  mostPopularTitles = await _wikimedia.GetRandomMostPopularTitlesAsync();
             _article = await _wikipedia.GetArticleAsync(await _wikimedia.GetRandomTitleAsync());
             
+            NoOfGuesses = 0;
+            TriedWords.Clear();
+
             Console.WriteLine("Initializing game \n");
             DisplayArticle();
             
